@@ -1,22 +1,21 @@
 #include <avr/io.h>
-#define F_CPU 16000000UL // Clock frequency for Arduino UNO
+#define F_CPU 16000000UL
 #include <util/delay.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
 
-// LCD pins
 #define LCD_RS 12
 #define LCD_EN 9
 #define LCD_D4 5
 #define LCD_D5 4
 #define LCD_D6 3
 #define LCD_D7 2
-// MAX487 REDE pin
+
 #define MAX487REDE_PIN 11
 
-// Function to send 4 bits to LCD
+//отправление 4 бит на LCD
 void lcd_write_4bit(unsigned char data, unsigned char rs) {
      if (rs) {
          if(LCD_RS >= 8) {
@@ -51,19 +50,19 @@ void lcd_write_4bit(unsigned char data, unsigned char rs) {
     _delay_us(100);
 }
 
-// Function to send a command to LCD
+//отправка команд на LCD
 void lcd_send_command(unsigned char command) {
     lcd_write_4bit(command >> 4, 0);
     lcd_write_4bit(command & 0x0F, 0);
 }
 
-// Function to send data to LCD
+//отправление данных на LCD
 void lcd_send_data(unsigned char data) {
     lcd_write_4bit(data >> 4, 1);
     lcd_write_4bit(data & 0x0F, 1);
 }
 
-// Initialize LCD
+//инициализация дисплея
 void lcd_init() {
      if (LCD_RS >= 8) {
       DDRB |= (1 << (LCD_RS - 8));
@@ -77,24 +76,24 @@ void lcd_init() {
     }
     DDRD |= (1 << LCD_D4) | (1 << LCD_D5) | (1 << LCD_D6) | (1 << LCD_D7);
 
-    _delay_ms(15); // Power-on delay
+    _delay_ms(15); //для включения
 
-    lcd_write_4bit(0x03, 0);  // Initial setup for 8-bit mode
+    lcd_write_4bit(0x03, 0);
     _delay_ms(5);
-    lcd_write_4bit(0x03, 0);  // Initial setup for 8-bit mode
+    lcd_write_4bit(0x03, 0);  
     _delay_us(150);
-     lcd_write_4bit(0x03, 0); // Initial setup for 8-bit mode
+     lcd_write_4bit(0x03, 0); 
     _delay_us(150);
-    lcd_write_4bit(0x02, 0); // Switch to 4-bit
+    lcd_write_4bit(0x02, 0); //переключение на 4 бита
 
-    lcd_send_command(0x28); // 4-bit, 2 line, 5x8 font
-    lcd_send_command(0x0C); // Display ON, cursor OFF
-    lcd_send_command(0x01); // Clear display
+    lcd_send_command(0x28); //4 бита, 2 линии, 2х8
+    lcd_send_command(0x0C); //включение дисплея, курсор выключен
+    lcd_send_command(0x01); //очистка дисплея
     _delay_ms(2);
-    lcd_send_command(0x06); // Increment cursor
+    lcd_send_command(0x06); //установка курсора
 }
 
-// Float to string conversion
+//конвертация переменной
 void float_to_string(float f, char *str, int precision) {
      int int_part = (int)f;
     float frac_part = f - (float)int_part;
@@ -107,7 +106,7 @@ void float_to_string(float f, char *str, int precision) {
     char int_str[10];
     char frac_str[10];
 
-    itoa(int_part, int_str, 10);  // using standard itoa, can cause issues
+    itoa(int_part, int_str, 10);
     itoa(frac_int, frac_str, 10);
 
      sprintf(str, "%s.", int_str);
@@ -121,13 +120,13 @@ void float_to_string(float f, char *str, int precision) {
 
 
 int main(void) {
-     // Setup REDE pin as output
+     //установка пина в режим вывода
      if(MAX487REDE_PIN >= 8){
         DDRB |= (1 << (MAX487REDE_PIN-8));
       } else {
         DDRD |= (1 << MAX487REDE_PIN);
       }
-    // Set REDE pin HIGH
+    //подача тока на пин
      if(MAX487REDE_PIN >= 8) {
         PORTB |= (1 << (MAX487REDE_PIN-8));
     } else {
@@ -136,10 +135,10 @@ int main(void) {
     _delay_ms(200);
 
 
-    // Initialize UART for receiving temperature
+    //инициализация
     UBRR0H = 0;
-    UBRR0L = 103; // 9600 baud
-    UCSR0B = (1 << RXEN0);  // Enable receiver
+    UBRR0L = 103; // 9600
+    UCSR0B = (1 << RXEN0);  //добавление ресивера
 
     lcd_init();
 
@@ -149,7 +148,7 @@ int main(void) {
       int i;
 
     while (1) {
-      // Read temperature from MAX487
+      //чтение температуры 
       if(MAX487REDE_PIN >= 8) {
                 PORTB &= ~(1 << (MAX487REDE_PIN-8));
         } else {
@@ -167,12 +166,12 @@ int main(void) {
 	    lcd_send_command(0x01); 
     _delay_ms(2); // небольшая задержка
 
-      // Convert temperature to string
+      //превращение температуры в строку
          float_to_string(t, tempStr, 2);
         snprintf(buffer, sizeof(buffer), "t = %s C", tempStr);
 
 
-      // Print on LCD
+      //вывод на дисплей
        for ( i = 0; buffer[i] != '\0'; i++) {
             lcd_send_data(buffer[i]);
         }
