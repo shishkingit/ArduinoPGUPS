@@ -182,7 +182,7 @@ int main(void) {
        for ( i = 0; buffer[i] != '\0'; i++) {
             lcd_send_data(buffer[i]);
         	}
-	    _delay_ms(200);
+	    _delay_ms(500);
     }
 
   return 0;
