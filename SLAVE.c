@@ -1,11 +1,12 @@
 #include <avr/io.h>
-#define F_CPU 16000000UL
+#define F_CPU 16000000UL //частота ATMEGA328P
 #include <util/delay.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
 
+//пины дисплея
 #define LCD_RS 12
 #define LCD_EN 9
 #define LCD_D4 5
@@ -13,6 +14,7 @@
 #define LCD_D6 3
 #define LCD_D7 2
 
+//пины управления MAX487
 #define MAX487REDE_PIN 11
 
 //отправление 4 бит на LCD
@@ -118,7 +120,7 @@ void float_to_string(float f, char *str, int precision) {
     str[len + i] = 0;
 }
 
-
+//основной цикл, вывод на дисплей
 int main(void) {
      //установка пина в режим вывода
      if(MAX487REDE_PIN >= 8){
@@ -141,7 +143,6 @@ int main(void) {
     UCSR0B = (1 << RXEN0);  //добавление ресивера
 
     lcd_init();
-
      float t;
       char buffer[20];
      char tempStr[10];
