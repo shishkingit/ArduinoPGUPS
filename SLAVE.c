@@ -92,7 +92,7 @@ void lcd_init() {
     lcd_send_command(0x0C); //включение дисплея, курсор выключен
     lcd_send_command(0x01); //очистка дисплея
     _delay_ms(2);
-    lcd_send_command(0x06); //установка курсора
+    lcd_send_command(0x02); //установка курсора
 }
 
 //конвертация переменной
@@ -147,6 +147,12 @@ int main(void) {
       char buffer[20];
      char tempStr[10];
       int i;
+	
+  //очистка дисплея
+	void lcd_clear() {
+    	lcd_send_command(0x01);
+    	_delay_ms(200);
+	}
 
     while (1) {
       //чтение температуры 
@@ -164,19 +170,19 @@ int main(void) {
         } else {
             PORTD |= (1 << MAX487REDE_PIN);
         }
-	    lcd_send_command(0x01); 
-    _delay_ms(2); // небольшая задержка
+
 
       //превращение температуры в строку
          float_to_string(t, tempStr, 2);
         snprintf(buffer, sizeof(buffer), "t = %s C", tempStr);
 
+	    lcd_clear();
 
       //вывод на дисплей
        for ( i = 0; buffer[i] != '\0'; i++) {
             lcd_send_data(buffer[i]);
-        }
-
+        	}
+	    _delay_ms(200);
     }
 
   return 0;
