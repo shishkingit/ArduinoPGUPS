@@ -67,7 +67,7 @@ int main(void) {
         //включение оптопары/лампочки
         if (t > 20) {
             PORTD |= (1 << OPTO_PIN);
-            _delay_ms(500);
+            _delay_ms(100);
             PORTD &= ~(1 << OPTO_PIN);
         } else {
             PORTD &= ~(1 << OPTO_PIN);
