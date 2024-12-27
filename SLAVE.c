@@ -120,6 +120,12 @@ void float_to_string(float f, char *str, int precision) {
     str[len + i] = 0;
 }
 
+//очистка дисплея
+void lcd_clear() {
+    lcd_send_command(0x01);
+    _delay_ms(200);
+}
+
 //основной цикл, вывод на дисплей
 int main(void) {
      //установка пина в режим вывода
@@ -147,12 +153,6 @@ int main(void) {
       char buffer[20];
      char tempStr[10];
       int i;
-	
-  //очистка дисплея
-	void lcd_clear() {
-    	lcd_send_command(0x01);
-    	_delay_ms(200);
-	}
 
     while (1) {
       //чтение температуры 
